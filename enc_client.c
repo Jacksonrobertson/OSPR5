@@ -51,8 +51,13 @@ int main(int argc, char *argv[]) {
   // Check usage & args
   if (argc < 3) {
     fprintf(stderr,"USAGE: %s hostname port\n", argv[0]);
-    exit(0);
+    exit(1);
   }
+  if (argc < 4) {
+    fprintf(stderr,"USAGE: %s key error\n", argv[0]);
+    exit(1);
+  }
+  
   FILE *input_file = fopen(argv[1], "r");
   if (input_file == NULL) {
     fprintf(stderr,"CLIENT: ERROR, Opening Input File");
