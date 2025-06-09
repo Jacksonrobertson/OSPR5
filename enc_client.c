@@ -53,6 +53,19 @@ int main(int argc, char *argv[]) {
     fprintf(stderr,"USAGE: %s hostname port\n", argv[0]);
     exit(0);
   }
+  FILE *input_file = fopen(argv[1], "r");
+  if (input_file == NULL) {
+    fprintf(stderr,"CLIENT: ERROR, Opening Input File");
+    exit(1);
+  }
+
+  FILE *key_file = fopen(argv[2], "r");
+  if (key_file == NULL) {
+    fprintf(stderr,"CLIENT: ERROR, Opening Key File\n");
+    exit(1);
+  }
+
+
 
   // Create a socket
   socketFD = socket(AF_INET, SOCK_STREAM, 0);
