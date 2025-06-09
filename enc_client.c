@@ -16,7 +16,7 @@
 // Error function used for reporting issues
 void error(const char *msg) {
   perror(msg);
-  exit(0);
+  exit(1);
 }
 
 // Set up the address struct
@@ -36,7 +36,7 @@ void setupAddressStruct(struct sockaddr_in* address,
   struct hostent* hostInfo = gethostbyname(hostname);
   if (hostInfo == NULL) {
     fprintf(stderr, "CLIENT: ERROR, no such host\n");
-    exit(0);
+    exit(1);
   }
   // Copy the first IP address from the DNS entry to sin_addr.s_addr
   memcpy((char*) &address->sin_addr.s_addr,
@@ -62,8 +62,21 @@ int main(int argc, char *argv[]) {
   FILE *key_file = fopen(argv[2], "r");
   if (key_file == NULL) {
     fprintf(stderr,"CLIENT: ERROR, Opening Key File\n");
+    fclose(input_file);
     exit(1);
   }
+
+  int port_number = atoi(argv[3]);
+  //if (port_number <= 0) idk if i need this
+
+  fseek(input_file, 0, SEEK_END);
+  int input_file_length = ftell(input_file)+1;
+  char input_buffer [input_file_length];
+  for (int i = 0; i < input_file_length; i++) {
+
+
+  }
+
 
 
 
