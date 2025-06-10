@@ -115,6 +115,7 @@ int main(int argc, char *argv[]) {
         exit(1);
       }
     }
+  }
     for (int j = 0; j < key_length; j++) {
       if ((key_buffer[j] < 'A' || key_buffer[j] > 'Z')) {
         if (key_buffer[j] != ' ') {
@@ -122,7 +123,7 @@ int main(int argc, char *argv[]) {
           exit(1);
         }
       }
-
+    }
   fclose(input_file);
   fclose(key_file);
 
