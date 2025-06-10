@@ -106,7 +106,7 @@ int main(int argc, char *argv[]) {
     fprintf(stderr, "Error: key length\n");
     exit(1);
   }
-  
+
   if (input_buffer[input_file_length - 1] == '\n') {
     input_file_length = input_file_length - 1;
     input_buffer[input_file_length] = '\0';
@@ -148,6 +148,15 @@ int main(int argc, char *argv[]) {
   if (connect(socketFD, (struct sockaddr*)&serverAddress, sizeof(serverAddress)) < 0){
     error("CLIENT: ERROR connecting");
   }
+  
+  char server_buffer_length[32];
+  int length = snprintf(server_buffer_length, sizeof(server_buffer_length), "%d\n", input_file_length);
+  int sent = 0;
+  while (sent < length) {
+    int send_data = send(socketFD, server_buffer_length + sent, length - sent, 0);
+    sent = sent + send_data;
+    }
+
 
   int i = 0;
   while (i < input_file_length) {
