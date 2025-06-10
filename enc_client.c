@@ -48,7 +48,6 @@ int main(int argc, char *argv[]) {
   int socketFD, charsWritten, charsRead;
   struct sockaddr_in serverAddress;
   char buffer[256];
-  // Check usage & args
   if (argc >= 4) {
     fprintf(stderr,"USAGE: %s hostname port\n", argv[0]);
     exit(1);
@@ -134,44 +133,42 @@ int main(int argc, char *argv[]) {
   }
 
    // Set up the server address struct
-  setupAddressStruct(&serverAddress, atoi(argv[3]), argv[4]);
+  setupAddressStruct(&serverAddress, atoi(argv[3]), "localhost");
   // Connect to server
   if (connect(socketFD, (struct sockaddr*)&serverAddress, sizeof(serverAddress)) < 0){
     error("CLIENT: ERROR connecting");
   }
 
-  // Get input message from user
-  printf("CLIENT: Enter text to send to the server, and then hit enter: ");
-  // Clear out the buffer array
-  memset(buffer, '\0', sizeof(buffer));
-  // Get input from the user, trunc to buffer - 1 chars, leaving \0
-  fgets(buffer, sizeof(buffer) - 1, stdin);
-  // Remove the trailing \n that fgets adds
-  buffer[strcspn(buffer, "\n")] = '\0';
-
-  // Send message to server
-  // Write to the server
-  charsWritten = send(socketFD, buffer, strlen(buffer), 0);
-  if (charsWritten < 0){
-    error("CLIENT: ERROR writing to socket");
-  }
-  if (charsWritten < strlen(buffer)){
-    printf("CLIENT: WARNING: Not all data written to socket!\n");
+  int i = 0;
+  while (i < input_file_length) {
+    int n = send(socketFD,input_buffer + i , input_file_length - i,0);
+    if (n == -1) {
+      error("Error: sending input file\n");
+    }
+    i += n;
   }
 
-  // Get return message from server
-  // Clear out the buffer again for reuse
-  memset(buffer, '\0',
-    sizeof(buffer));
-  // Read data from the socket, leaving \0 at end
-  charsRead = recv(socketFD, buffer, sizeof(buffer) - 1, 0);
-  if (charsRead < 0){
-    error("CLIENT: ERROR reading from socket");
-    exit(2);
-  }
-  printf("CLIENT: I received this from the server: \"%s\"\n", buffer);
+  int j = 0;
+  while (j < key_length) {
+    int n = send(socketFD, key_buffer + j, key_length - j, 0);
+    if (n == -1) {
+      error("Error: sending key\n");
+    }
+    j += n;
+  }\
 
-  // Close the socket
+  char *received_code = malloc(input_file_length + 1);
+    int received = 0;
+    while (received < input_file_length) {
+      int n = recv(socketFD,received_code + received, input_file_length - received, 0);
+      if (n <= 0) {
+        error("Error: receiving data\n");
+      }
+      received += n;
+    }
+  received_code[input_file_length] = '\0';
+  printf("%s\n", received_code);
+  free(received_code);
   close(socketFD);
   return 0;
 }
