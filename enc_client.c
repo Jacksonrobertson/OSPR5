@@ -48,7 +48,7 @@ int main(int argc, char *argv[]) {
   int socketFD, charsWritten, charsRead;
   struct sockaddr_in serverAddress;
   char buffer[256];
-  if (argc >= 4) {
+  if (argc != 4) {
     fprintf(stderr,"USAGE: %s hostname port\n", argv[0]);
     exit(1);
   }
