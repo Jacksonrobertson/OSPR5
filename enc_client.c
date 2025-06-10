@@ -155,7 +155,7 @@ int main(int argc, char *argv[]) {
       error("Error: sending key\n");
     }
     j += n;
-  }\
+  }
 
   char *received_code = malloc(input_file_length + 1);
     int received = 0;
