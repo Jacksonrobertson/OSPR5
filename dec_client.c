@@ -45,6 +45,7 @@ void setupAddressStruct(struct sockaddr_in* address,
 }
 
 int main(int argc, char *argv[]) {
+  //significant socket code sourced from socket modules in canvas
   int socketFD, charsWritten, charsRead;
   struct sockaddr_in serverAddress;
   char buffer[256];
