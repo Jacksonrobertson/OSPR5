@@ -118,7 +118,7 @@ int main(int argc, char *argv[]) {
   }
 
    // Set up the server address struct
-  setupAddressStruct(&serverAddress, atoi(argv[3]), argv[1]);
+  setupAddressStruct(&serverAddress, atoi(argv[4]), argv[3]);
 
   // Connect to server
   if (connect(socketFD, (struct sockaddr*)&serverAddress, sizeof(serverAddress)) < 0){
