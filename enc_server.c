@@ -5,6 +5,7 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
+#include <signal.h>
 
 // Error function used for reporting issues
 void error(const char *msg) {
@@ -28,6 +29,7 @@ void setupAddressStruct(struct sockaddr_in* address,
 }
 
 int main(int argc, char *argv[]){
+  signal(SIGCHLD, SIG_IGN);
   int connectionSocket, charsRead;
   char buffer[256];
   struct sockaddr_in serverAddress, clientAddress;
@@ -61,34 +63,26 @@ int main(int argc, char *argv[]){
   // Accept a connection, blocking if one is not available until one connects
   while(1){
     // Accept the connection request which creates a connection socket
-    connectionSocket = accept(listenSocket,
-                (struct sockaddr *)&clientAddress,
-                &sizeOfClientInfo);
+    connectionSocket = accept(listenSocket, (struct sockaddr *)&clientAddress, &sizeOfClientInfo);
+
     if (connectionSocket < 0){
       error("ERROR on accept");
     }
+    pid_t pid = fork();
+    if (pid < 0) {
+      perror("ERROR on fork");
+      close(connectionSocket);
+    }
+    if (pid == 0) {
+      close(listenSocket);
 
-    printf("SERVER: Connected to client running at host %d port %d\n",
-                          ntohs(clientAddress.sin_addr.s_addr),
-                          ntohs(clientAddress.sin_port));
+      close(connectionSocket);
+      exit(0);
+    }
+    close(connectionSocket);
 
     // Get the message from the client and display it
-    memset(buffer, '\0', 256);
-    // Read the client's message from the socket
-    charsRead = recv(connectionSocket, buffer, 255, 0);
-    if (charsRead < 0){
-      error("ERROR reading from socket");
-    }
-    printf("SERVER: I received this from the client: \"%s\"\n", buffer);
 
-    // Send a Success message back to the client
-    charsRead = send(connectionSocket,
-                    "I am the server, and I got your message", 39, 0);
-    if (charsRead < 0){
-      error("ERROR writing to socket");
-    }
-    // Close the connection socket for this client
-    close(connectionSocket);
   }
   // Close the listening socket
   close(listenSocket);
