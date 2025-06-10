@@ -53,11 +53,11 @@ int main(int argc, char *argv[]) {
     fprintf(stderr,"USAGE: %s hostname port\n", argv[0]);
     exit(1);
   }
-  if (argc < 4) {
-    fprintf(stderr,"USAGE: %s key error\n", argv[0]);
-    exit(1);
-  }
-  
+  //==if (argc < 4) {
+    //fprintf(stderr,"USAGE: %s key error\n", argv[0]);
+    //exit(1);
+  //}
+
   FILE *input_file = fopen(argv[1], "r");
   if (input_file == NULL) {
     fprintf(stderr,"CLIENT: ERROR, Opening Input File");
@@ -75,13 +75,41 @@ int main(int argc, char *argv[]) {
   //if (port_number <= 0) idk if i need this
 
   fseek(input_file, 0, SEEK_END);
-  int input_file_length = ftell(input_file)+1;
+  int input_file_length = ftell(input_file);
+  rewind(input_file);
+
   char input_buffer [input_file_length];
+
   for (int i = 0; i < input_file_length; i++) {
-
-
+    int input_char = fgetc(key_file);
+    if (input_char == EOF) {
+      fprintf(stderr,"CLIENT: ERROR, KEY SIZE NOT CORRECT\n");
+      exit(1);
+    }
+    input_buffer[i] = input_char;
+    input_buffer[input_file_length] = '\0';
   }
 
+  fseek(key_file, 0, SEEK_END);
+  int key_length = ftell(key_file);
+  rewind(key_file);
+
+  char key_buffer[key_length];
+
+  for (int i = 0; i < key_length; i++) {
+    int key_char = fgetc(key_file);
+    if (key_char == EOF) {
+      fprintf(stderr,"ERROR\n");
+      exit(1);
+    }
+    key_buffer[i] = key_char;
+    key_buffer[key_length] = '\0';
+  }
+
+  if (key_length < input_file_length) {
+    fprintf(stderr, "Error: key length");
+    exit(1);
+  }
 
 
 
