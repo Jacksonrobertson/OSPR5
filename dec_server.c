@@ -111,6 +111,7 @@ int main(int argc, char *argv[]){
         } else {
           input_char_value = input_char - 'A';
         }
+
         char key_char = key[i];
         int key_char_value;
         if (key_char == ' ') {
@@ -118,7 +119,10 @@ int main(int argc, char *argv[]){
         } else {
           key_char_value = key_char - 'A';
         }
-        int encoded_value = (input_char_value + key_char_value) % 27;
+
+        // Decode instead of encode:
+        int encoded_value = (input_char_value - key_char_value + 27) % 27;
+
         if (encoded_value == 26) {
           encoded_text[i] = ' ';
         } else {
