@@ -71,9 +71,6 @@ int main(int argc, char *argv[]) {
     exit(1);
   }
 
-  int port_number = atoi(argv[3]);
-  //if (port_number <= 0) idk if i need this
-
   fseek(input_file, 0, SEEK_END);
   int input_file_length = ftell(input_file);
   rewind(input_file);
@@ -111,7 +108,8 @@ int main(int argc, char *argv[]) {
     exit(1);
   }
 
-
+  fclose(input_file);
+  fclose(key_file);
 
   // Create a socket
   socketFD = socket(AF_INET, SOCK_STREAM, 0);
@@ -120,7 +118,7 @@ int main(int argc, char *argv[]) {
   }
 
    // Set up the server address struct
-  setupAddressStruct(&serverAddress, atoi(argv[2]), argv[1]);
+  setupAddressStruct(&serverAddress, atoi(argv[3]), argv[1]);
 
   // Connect to server
   if (connect(socketFD, (struct sockaddr*)&serverAddress, sizeof(serverAddress)) < 0){
@@ -152,6 +150,7 @@ int main(int argc, char *argv[]) {
   charsRead = recv(socketFD, buffer, sizeof(buffer) - 1, 0);
   if (charsRead < 0){
     error("CLIENT: ERROR reading from socket");
+    exit(2);
   }
   printf("CLIENT: I received this from the server: \"%s\"\n", buffer);
 
