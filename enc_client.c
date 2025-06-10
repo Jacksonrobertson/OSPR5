@@ -49,7 +49,7 @@ int main(int argc, char *argv[]) {
   struct sockaddr_in serverAddress;
   char buffer[256];
   // Check usage & args
-  if (argc < 3) {
+  if (argc >= 5) {
     fprintf(stderr,"USAGE: %s hostname port\n", argv[0]);
     exit(1);
   }
