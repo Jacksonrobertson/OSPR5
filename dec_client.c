@@ -149,6 +149,15 @@ int main(int argc, char *argv[]) {
     error("CLIENT: ERROR connecting");
   }
 
+  char server_buffer_length[32];
+  int length = snprintf(server_buffer_length, sizeof(server_buffer_length), "%d\n", input_file_length);
+  int sent = 0;
+  while (sent < length) {
+    int send_data = send(socketFD, server_buffer_length + sent, length - sent, 0);
+    sent = sent + send_data;
+    }
+
+
   int i = 0;
   while (i < input_file_length) {
     int n = send(socketFD,input_buffer + i , input_file_length - i,0);
