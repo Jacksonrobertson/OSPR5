@@ -75,23 +75,23 @@ int main(int argc, char *argv[]) {
   int input_file_length = ftell(input_file);
   rewind(input_file);
 
-  char input_buffer [input_file_length];
+  char input_buffer [input_file_length+1];
 
   for (int i = 0; i < input_file_length; i++) {
-    int input_char = fgetc(key_file);
+    int input_char = fgetc(input_file);
     if (input_char == EOF) {
       fprintf(stderr,"CLIENT: ERROR, KEY SIZE NOT CORRECT\n");
       exit(1);
     }
     input_buffer[i] = input_char;
-    input_buffer[input_file_length] = '\0';
   }
+  input_buffer[input_file_length] = '\0';
 
   fseek(key_file, 0, SEEK_END);
   int key_length = ftell(key_file);
   rewind(key_file);
 
-  char key_buffer[key_length];
+  char key_buffer[key_length+1];
 
   for (int i = 0; i < key_length; i++) {
     int key_char = fgetc(key_file);
@@ -100,8 +100,8 @@ int main(int argc, char *argv[]) {
       exit(1);
     }
     key_buffer[i] = key_char;
-    key_buffer[key_length] = '\0';
   }
+  key_buffer[key_length] = '\0';
 
   if (key_length < input_file_length) {
     fprintf(stderr, "Error: key length");
