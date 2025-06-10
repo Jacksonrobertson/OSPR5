@@ -106,6 +106,16 @@ int main(int argc, char *argv[]) {
     fprintf(stderr, "Error: key length\n");
     exit(1);
   }
+  
+  if (input_buffer[input_file_length - 1] == '\n') {
+    input_file_length = input_file_length - 1;
+    input_buffer[input_file_length] = '\0';
+    }
+
+  if (key_buffer[key_length - 1] == '\n') {
+    key_length = key_length - 1;
+    key_buffer[key_length] = '\0';
+  }
 
   for (int i = 0; i < input_file_length; i++) {
     if ((input_buffer[i] < 'A' || input_buffer[i] > 'Z')) {
