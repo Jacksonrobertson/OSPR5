@@ -73,7 +73,7 @@ int main(int argc, char *argv[]){
       close(connectionSocket);
     }
     if (pid == 0) {
-      close(listenSocket);
+      //close(listenSocket);
 
       char input_line[32];
       int length_tracker = 0;
@@ -110,6 +110,7 @@ int main(int argc, char *argv[]){
         sent_counter = sent_counter + data_out;
       }
       close(connectionSocket);
+      close(listenSocket);
       exit(0);
     }
     close(connectionSocket);
