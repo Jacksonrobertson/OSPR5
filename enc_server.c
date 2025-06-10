@@ -30,8 +30,7 @@ void setupAddressStruct(struct sockaddr_in* address,
 
 int main(int argc, char *argv[]){
   signal(SIGCHLD, SIG_IGN);
-  int connectionSocket, charsRead;
-  char buffer[256];
+  int connectionSocket;
   struct sockaddr_in serverAddress, clientAddress;
   socklen_t sizeOfClientInfo = sizeof(clientAddress);
 
@@ -57,7 +56,7 @@ int main(int argc, char *argv[]){
     error("ERROR on binding");
   }
 
-  // Start listening for connetions. Allow up to 5 connections to queue up
+  // Start listening for connections. Allow up to 5 connections to queue up
   listen(listenSocket, 5);
 
   // Accept a connection, blocking if one is not available until one connects
@@ -76,15 +75,44 @@ int main(int argc, char *argv[]){
     if (pid == 0) {
       close(listenSocket);
 
+      char input_line[32];
+      int length_tracker = 0;
+      char input_character;
+      while (length_tracker < (int)sizeof(input_line) - 1) {
+        recv(connectionSocket, &input_character, 1, 0);
+        if (input_character == '\n') {
+          break;
+        }
+        input_line[length_tracker = length_tracker + 1] = input_character;
+      }
+      input_line[length_tracker] = '\0';
+      int input_text_length = atoi(input_line);
+      char *input_text = malloc(input_text_length);
+      char *encoded_text = malloc(input_text_length);
+      char *key = malloc(input_text_length);
+
+      int data_received = 0;
+      while (data_received < input_text_length) {
+        ssize_t data = recv(connectionSocket,input_text + data_received,input_text_length - data_received,0);
+        data_received = data_received + data;
+      }
+      data_received = 0;
+      while (data_received < input_text_length) {
+        ssize_t data = recv(connectionSocket,key + data_received,input_text_length - data_received,0);
+        data_received = data_received + data;
+      }
+      //encoder goes here
+      encoded_text = "hdbhszdxvvavsfvsavasbdbuashdbauisdhbfhdb";
+
+      size_t sent_counter = 0;
+      while (sent_counter < input_text_length) {
+        ssize_t data_out = send(connectionSocket,encoded_text + sent_counter,input_text_length - sent_counter,0);
+        sent_counter = sent_counter + data_out;
+      }
       close(connectionSocket);
       exit(0);
     }
     close(connectionSocket);
 
-    // Get the message from the client and display it
-
   }
-  // Close the listening socket
-  close(listenSocket);
-  return 0;
 }
