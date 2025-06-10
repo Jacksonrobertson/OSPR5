@@ -29,6 +29,8 @@ void setupAddressStruct(struct sockaddr_in* address,
 }
 
 int main(int argc, char *argv[]){
+  //significant socket code sourced from socket modules in canvas
+  //code for concurrency derived from canvas exammples
   signal(SIGCHLD, SIG_IGN);
   int connectionSocket;
   struct sockaddr_in serverAddress, clientAddress;
@@ -102,6 +104,7 @@ int main(int argc, char *argv[]){
         ssize_t data = recv(connectionSocket,key + data_received,input_text_length - data_received,0);
         data_received = data_received + data;
       }
+       //formula for decoding and decoding designed using wikipedia, and online PAD decoding resources
 
       for (int i = 0; i < input_text_length; i++) {
         char input_char = input_text[i];
