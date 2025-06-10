@@ -66,6 +66,7 @@ int main(int argc, char *argv[]){
 
     if (connectionSocket < 0){
       error("ERROR on accept");
+      continue;
     }
     pid_t pid = fork();
     if (pid < 0) {
@@ -73,7 +74,7 @@ int main(int argc, char *argv[]){
       close(connectionSocket);
     }
     if (pid == 0) {
-      //close(listenSocket);
+      close(listenSocket);
 
       char input_line[32];
       int length_tracker = 0;
@@ -83,7 +84,7 @@ int main(int argc, char *argv[]){
         if (input_character == '\n') {
           break;
         }
-        input_line[length_tracker = length_tracker + 1] = input_character;
+        input_line[length_tracker++] = input_character;
       }
       input_line[length_tracker] = '\0';
       int input_text_length = atoi(input_line);
@@ -101,8 +102,29 @@ int main(int argc, char *argv[]){
         ssize_t data = recv(connectionSocket,key + data_received,input_text_length - data_received,0);
         data_received = data_received + data;
       }
-      //encoder goes here
-      encoded_text = "hdbhszdxvvavsfvsavasbdbuashdbauisdhbfhdb";
+
+      for (int i = 0; i < input_text_length; i++) {
+        char input_char = input_text[i];
+        int input_char_value;
+        if (input_char == ' ') {
+          input_char_value = 26;
+        } else {
+          input_char_value = input_char - 'A';
+        }
+        char key_char = key[i];
+        int key_char_value;
+        if (key_char == ' ') {
+          key_char_value = 26;
+        } else {
+          key_char_value = key_char - 'A';
+        }
+        int encoded_value = (input_char_value + key_char_value) % 27;
+        if (encoded_value == 26) {
+          encoded_text[i] = ' ';
+        } else {
+          encoded_text[i] = 'A' + encoded_value;
+        }
+      }
 
       size_t sent_counter = 0;
       while (sent_counter < input_text_length) {
@@ -110,7 +132,9 @@ int main(int argc, char *argv[]){
         sent_counter = sent_counter + data_out;
       }
       close(connectionSocket);
-      close(listenSocket);
+      free(input_text);
+      free(encoded_text);
+      free(key);
       exit(0);
     }
     close(connectionSocket);
