@@ -49,7 +49,7 @@ int main(int argc, char *argv[]) {
   struct sockaddr_in serverAddress;
   char buffer[256];
   // Check usage & args
-  if (argc >= 5) {
+  if (argc >= 4) {
     fprintf(stderr,"USAGE: %s hostname port\n", argv[0]);
     exit(1);
   }
@@ -60,7 +60,7 @@ int main(int argc, char *argv[]) {
 
   FILE *input_file = fopen(argv[1], "r");
   if (input_file == NULL) {
-    fprintf(stderr,"CLIENT: ERROR, Opening Input File");
+    fprintf(stderr,"CLIENT: ERROR, Opening Input File\n");
     exit(1);
   }
 
@@ -104,9 +104,24 @@ int main(int argc, char *argv[]) {
   key_buffer[key_length] = '\0';
 
   if (key_length < input_file_length) {
-    fprintf(stderr, "Error: key length");
+    fprintf(stderr, "Error: key length\n");
     exit(1);
   }
+
+  for (int i = 0; i < input_file_length; i++) {
+    if ((input_buffer[i] < 'A' || input_buffer[i] > 'Z')) {
+      if (input_buffer[i] != ' ') {
+        fprintf(stderr, "Error: input file not A-Z\n");
+        exit(1);
+      }
+    }
+    for (int j = 0; j < key_length; j++) {
+      if ((key_buffer[j] < 'A' || key_buffer[j] > 'Z')) {
+        if (key_buffer[j] != ' ') {
+          fprintf(stderr, "Error: key not A-Z\n");
+          exit(1);
+        }
+      }
 
   fclose(input_file);
   fclose(key_file);
@@ -118,12 +133,12 @@ int main(int argc, char *argv[]) {
   }
 
    // Set up the server address struct
-  setupAddressStruct(&serverAddress, atoi(argv[4]), argv[3]);
-
+  setupAddressStruct(&serverAddress, atoi(argv[3]), argv[4]);
   // Connect to server
   if (connect(socketFD, (struct sockaddr*)&serverAddress, sizeof(serverAddress)) < 0){
     error("CLIENT: ERROR connecting");
   }
+
   // Get input message from user
   printf("CLIENT: Enter text to send to the server, and then hit enter: ");
   // Clear out the buffer array
@@ -145,7 +160,8 @@ int main(int argc, char *argv[]) {
 
   // Get return message from server
   // Clear out the buffer again for reuse
-  memset(buffer, '\0', sizeof(buffer));
+  memset(buffer, '\0',
+    sizeof(buffer));
   // Read data from the socket, leaving \0 at end
   charsRead = recv(socketFD, buffer, sizeof(buffer) - 1, 0);
   if (charsRead < 0){
